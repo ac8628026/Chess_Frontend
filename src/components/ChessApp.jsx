@@ -6,6 +6,7 @@ import { RoomContext } from "../useContext/RoomContext";
 import { useSocket } from "./../useContext/SocketContext";
 import Notification from "./Notification";
 import Alert from "./Alert";
+import PromotionDialog from './PromotionDialog'; // Import the promotion dialog
 
 const ChessBoard = () => {
   const socket = useSocket();
@@ -16,18 +17,24 @@ const ChessBoard = () => {
   const [status, setStatus] = useState(""); // State to hold the status of the game
   const { roomId,setRoomId } = useContext(RoomContext);
   const [notify, setNotify] = useState("")
+  const [chessEnable,setChessEnable] = useState(false)
+  const [showPromotion, setShowPromotion] = useState(false); // State to control promotion dialog visibility
+  const [promotionSquare, setPromotionSquare] = useState(null); // State to store the square for promotion
+  const [sourceSquare, setSourceSquare] = useState(null); // State to store the source square for promotion
 
   useEffect(() => {
     // Event listener for receiving the player's side
     socket.on("playerSide", (side) => {
       setPlayerSide(side);
-      setMessage(`You are playing as ${side}`);
+      setMessage(`Wating for another player to join the room ${roomId}...`);
     });
 
     // Event listener for starting the game
     socket.on("startGame", () => {
       setMessage("Game has started!");
       setCurrentTurn("white"); // White always starts first in chess
+      setChessEnable(true)
+
     });
 
     // Event listener for receiving moves from the opponent
@@ -60,7 +67,9 @@ const ChessBoard = () => {
       }, 5000); 
     });
     socket.on("roomfull", (msg) => {
+      
       setNotify(msg);
+      
       setTimeout(() => {
         window.location.reload();
       }, 4000);
@@ -93,11 +102,38 @@ const ChessBoard = () => {
     const move = gameCopy.move({
       from: sourceSquare,
       to: targetSquare,
-      promotion: "q", // Promote to a queen if needed
+      promotion: "q", // Default to promoting to a queen
     });
 
     if (move === null) return false; // Return false if the move is illegal
 
+    // Check if the move is a promotion
+    if (move.flags.includes('p')) {
+      setSourceSquare(sourceSquare);
+      setPromotionSquare(targetSquare);
+      setShowPromotion(true);
+      return;
+    }
+
+    handleMove(gameCopy, move);
+    return true; // Return true to indicate the move was successful
+  };
+
+  // Function to handle the promotion
+  const handlePromotion = (promotionPiece) => {
+    const gameCopy = new Chess(game.fen());
+    const move = gameCopy.move({
+      from: sourceSquare,
+      to: promotionSquare,
+      promotion: promotionPiece,
+    });
+
+    handleMove(gameCopy, move);
+    setShowPromotion(false);
+  };
+
+  // Function to handle move logic
+  const handleMove = (gameCopy, move) => {
     let endStatus = "";
     if (gameCopy.isCheckmate()) {
       endStatus = `${playerSide} Win! `;
@@ -105,11 +141,7 @@ const ChessBoard = () => {
       endStatus = "Draw!";
     } else if (gameCopy.isStalemate()) {
       endStatus = "Stalemate!";
-    } else if (gameCopy.isInsufficientMaterial()) {
-      endStatus = "Draw due to insufficient material!";
-    } else if (gameCopy.isThreefoldRepetition()) {
-      endStatus = "Draw by threefold repetition!";
-    }
+    } 
 
     if (endStatus) {
       console.log(endStatus);
@@ -120,7 +152,6 @@ const ChessBoard = () => {
     setGame(gameCopy);
     socket.emit("move", { roomId, move }); // Emit the move with the roomId information
     setCurrentTurn(gameCopy.turn() === "w" ? "white" : "black"); // Update the current turn
-    return true; // Return true to indicate the move was successful
   };
 
   // Function to handle rematch request
@@ -139,12 +170,17 @@ const ChessBoard = () => {
     <div className="flex flex-col items-center ">
       <div className="" ><Alert msg={message}/></div>
       <p className=" m-2 "><span className="bg-amber-700 p-2 rounded "> Current Turn</span> {currentTurn}</p>
-      <div className="relative m-3 p-0">
+      <div className="relative m-2 p-0">
         <div className={status || notify ? "blur-sm" : "" }>
         <Chessboard
           position={game.fen()} // Set the board position to the current game state
           onPieceDrop={onDrop} // Set the drop handler to our custom function
           boardWidth={400} // Set the width of the board
+          showPromotionDialog ={true}
+          showBoardNotation={true}
+          autoPromoteToQueen = {false } // Set the board orientation based on the player's side
+          boardOrientation={playerSide === "white" ? "black" : "white"}
+          customBoardStyle={{ display : chessEnable ? "block" : "none"}}
           
         /></div>
         {status && (
@@ -160,6 +196,17 @@ const ChessBoard = () => {
               <Notification status={notify} onJoinNewRoom={onJoinNewRoom} />
             </div>
           </div>
+        )}
+        {showPromotion && (
+          <div className="absolute inset-0 flex items-center justify-center z-10">
+          <div className="">
+           <PromotionDialog 
+            isVisible={showPromotion} 
+            onSelectPromotion={handlePromotion} 
+          />
+          </div>
+        </div>
+          
         )}
       </div>
       

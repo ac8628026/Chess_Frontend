@@ -1,5 +1,5 @@
 // Home.js
-import { useContext, useEffect, useState} from "react";
+import { useContext, useState} from "react";
 import { RoomContext } from "../useContext/RoomContext";
 import VideoChat from "../components/VideoChat";
 import ChessApp from "../components/ChessApp";
@@ -18,6 +18,16 @@ const Home = () => {
     socket.emit("join-room", roomId);
     setRoomTrue(true);
   };
+
+  // useEffect(() => {
+  //   socket.on("roomjoin", (message) => {
+  //     console.log(message);
+  //   }
+  //   );
+  //   return () => {
+  //     socket.off("roomjoin");
+  //   }
+  // }, [socket]);
 
   const joinNewroom = () => {
     window.location.reload();
@@ -38,8 +48,7 @@ const Home = () => {
          </div>
          </div>
         </>
-      ) : (
-        <div className="flex m-3 justify-center items-center h-auto ">
+      ) : ( <div className="flex m-3 justify-center items-center h-auto ">
           <input
            className="border rounded-lg p-2 m-2 w-1/2 md:w-1/4"
             type="text"
@@ -56,6 +65,7 @@ const Home = () => {
           </button>
         </div>
       )}
+       
     </>
   );
 };

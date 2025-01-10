@@ -144,7 +144,7 @@ const toggleAudio = () => {
   return (
     <div className='m-2 p-2 flex flex-col items-center  '>
       <div className='flex flex-col sm:flex-row md:flex-col  m-3'>
-      <video ref={localVideoRef} autoPlay  className="w-[328px] h-[246px] min-w-[320px] border m-1 border-black bg-black" ></video>
+      <video ref={localVideoRef} autoPlay muted  className="w-[328px] h-[246px] min-w-[320px] border m-1 border-black bg-black" ></video>
       <video  ref={remoteVideoRef} autoPlay className="w-[328px] h-[246px] border m-1 border-black bg-black "></video>
       </div>
       {!isConnected && !incomingCall && (
