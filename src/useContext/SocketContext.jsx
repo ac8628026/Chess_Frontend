@@ -11,7 +11,7 @@ export const SocketProvider = ({ children }) => {
   const [socket, setSocket] = useState();
 
   useEffect(() => {
-    const newSocket = io('wss://3a71-203-110-242-42.ngrok-free.app',{path:'/socket.io/',transports:['websocket'],});
+    const newSocket = io('wss://4ad6-203-110-242-42.ngrok-free.app/',{path:'/socket.io/',transports:['websocket'],});
     setSocket(newSocket);
 
     return () => newSocket.close();
