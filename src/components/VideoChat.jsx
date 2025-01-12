@@ -123,9 +123,9 @@ const VideoChat = () => {
     await peerConnectionRef.current.setLocalDescription(answer);
     socket.emit('answer', { answer, room: roomId });
     console.log('Answer sent1')
-    setIsConnected(true); // Set connected state to true
+    setIsConnected(true); 
   };
-// Function to toggle video
+
 const toggleVideo = () => {
   const videoTrack = localStreamRef.current.getVideoTracks()[0];
   if (videoTrack) {
@@ -133,7 +133,7 @@ const toggleVideo = () => {
     setIsVideoEnabled(videoTrack.enabled);
   }
 };
-// Function to toggle audio
+
 const toggleAudio = () => {
   const audioTrack = localStreamRef.current.getAudioTracks()[0];
   if (audioTrack) {

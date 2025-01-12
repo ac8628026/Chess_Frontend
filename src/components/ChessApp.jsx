@@ -10,17 +10,17 @@ import PromotionDialog from './PromotionDialog'; // Import the promotion dialog
 
 const ChessBoard = () => {
   const socket = useSocket();
-  const [game, setGame] = useState(new Chess()); // State to hold the game instance
-  const [playerSide, setPlayerSide] = useState(null); // State to hold the player's side
-  const [message, setMessage] = useState(""); // State to hold messages for the player
-  const [currentTurn, setCurrentTurn] = useState("white"); // State to hold the current turn
-  const [status, setStatus] = useState(""); // State to hold the status of the game
+  const [game, setGame] = useState(new Chess()); 
+  const [playerSide, setPlayerSide] = useState(null); 
+  const [message, setMessage] = useState(""); 
+  const [currentTurn, setCurrentTurn] = useState("white"); 
+  const [status, setStatus] = useState(""); 
   const { roomId,setRoomId } = useContext(RoomContext);
   const [notify, setNotify] = useState("")
   const [chessEnable,setChessEnable] = useState(false)
-  const [showPromotion, setShowPromotion] = useState(false); // State to control promotion dialog visibility
-  const [promotionSquare, setPromotionSquare] = useState(null); // State to store the square for promotion
-  const [sourceSquare, setSourceSquare] = useState(null); // State to store the source square for promotion
+  const [showPromotion, setShowPromotion] = useState(false); 
+  const [promotionSquare, setPromotionSquare] = useState(null); 
+  const [sourceSquare, setSourceSquare] = useState(null); 
 
   useEffect(() => {
     // Event listener for receiving the player's side
