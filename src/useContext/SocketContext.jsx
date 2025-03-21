@@ -11,11 +11,12 @@ export const SocketProvider = ({ children }) => {
   const [socket, setSocket] = useState();
 
   useEffect(() => {
-    const newSocket = io('wss://9cf7-203-110-242-42.ngrok-free.app/',{path:'/socket.io/',transports:['websocket'],});
+    const newSocket = io('http://13.51.146.135:3000');
     setSocket(newSocket);
-
+  
     return () => newSocket.close();
   }, []);
+  
 
   return (
     <SocketContext.Provider value={socket}>
