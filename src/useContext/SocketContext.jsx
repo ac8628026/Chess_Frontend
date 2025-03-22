@@ -11,7 +11,7 @@ export const SocketProvider = ({ children }) => {
   const [socket, setSocket] = useState();
 
   useEffect(() => {
-    const newSocket = io('wss://1d30-13-51-146-135.ngrok-free.app/',{path:'/socket.io/',transports:['websocket'],});
+    const newSocket = io('https://chesscam.kgpian.site/');
     setSocket(newSocket);
   
     return () => newSocket.close();
